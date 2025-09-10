@@ -1,6 +1,8 @@
-CPT UIでポストタイプを事前に作成
-ACFでカスタムフィールドを事前に作成
+//CPT UIでポストタイプを事前に作成
+//ACFでカスタムフィールドを事前に作成
 // プロジェクトの投稿一覧表示（トップページ用）
+//functions.phpに記入
+
 function project_list_shortcode() {
     ob_start();
 
@@ -43,3 +45,14 @@ function project_list_shortcode() {
     return ob_get_clean();
 }
 add_shortcode('project_list', 'project_list_shortcode');
+
+
+//CSS
+	.project-item {
+		display:flex;
+	}
+	.project-item > img {
+		width:50%;	
+		margin-left:2rem
+	}
+	
