@@ -56,3 +56,58 @@ add_shortcode('project_list', 'project_list_shortcode');
 		margin-left:2rem
 	}
 	
+///年度ごとに並べる場合のショートコードは以下
+// 施工事例の一覧表示（プロジェクトページ用）
+// [project_list] ショートコード
+function project_list_shortcode() {
+    ob_start();
+
+    $args = [
+        'post_type'      => 'projects', 
+        'posts_per_page' => -1,
+        'meta_key'       => 'works_year', // 並べ替えのキー
+        'orderby'        => 'meta_value_num', // 数値として並び替え
+        'order'          => 'ASC', // 昇順（小さい順）
+    ];
+    $projects_query = new WP_Query($args);
+
+    if ($projects_query->have_posts()) {
+        // 年度ごとにまとめる配列
+        $grouped_projects = [];
+
+        while ($projects_query->have_posts()) {
+            $projects_query->the_post();
+
+            $works_year = get_field('works_year');
+            $works_name = get_field('works_name');
+
+            if ($works_year && $works_name) {
+                $grouped_projects[$works_year][] = $works_name;
+            }
+        }
+
+        // 出力
+		echo '<div class="projects-list sr-fade">';
+        foreach ($grouped_projects as $year => $works) {
+            echo '<div class="project-year-block">';
+            echo '<h5 class="works_year">' . esc_html($year) . '年度</h5>';
+            echo '<ul>';
+            foreach ($works as $work_name) {
+                echo '<li class="works_name">' . esc_html($work_name) . '</li>';
+            }
+            echo '</ul>';
+            echo '</div>';
+        }
+        echo '</div>';
+
+        wp_reset_postdata();
+    } else {
+        echo '<p>登録されていません。</p>';
+    }
+
+    return ob_get_clean();
+}
+add_shortcode('project_list', 'project_list_shortcode');
+
+
+//トップページに表示するように、表示件数と昇降順のみ変える場合は以下
