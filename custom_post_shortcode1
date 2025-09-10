@@ -1,0 +1,45 @@
+CPT UIでポストタイプを事前に作成
+ACFでカスタムフィールドを事前に作成
+// プロジェクトの投稿一覧表示（トップページ用）
+function project_list_shortcode() {
+    ob_start();
+
+    $args = [
+        'post_type' => 'projects', 
+        'posts_per_page' => 2,
+       'meta_key' => 'project-no', // 並べ替えのキー
+        'orderby' => 'meta_value_num', // 数値として並び替え
+        'order' => 'ASC', // 昇順（小さい順）
+    ];
+    $patent_query = new WP_Query($args);
+
+    if ($patent_query->have_posts()) {
+        echo '<div class="projects-list">';
+        while ($patent_query->have_posts()) {
+            $patent_query->the_post();
+
+            $project_number = get_field('project-no');
+            $project_name = get_field('project-name');
+			$project_intro = get_field('project-intro');
+            $project_image = get_field('project-image');
+
+            ?>
+            <article class="project-item sr-fade">
+				<div>
+					<h5 class="project-no"><?php echo esc_html($project_number); ?></h5>
+                	<h5 class="project-name"><?php echo esc_html($project_name); ?></h5>
+					<p class="project-intro"><?php echo esc_html($project_intro); ?></p>
+				</div>
+				<img src="<?php echo esc_html($project_image); ?>">
+            </article>
+            <?php
+        }
+        echo '</div>';
+        wp_reset_postdata();
+    } else {
+        echo '<p>登録されていません。</p>';
+    }
+
+    return ob_get_clean();
+}
+add_shortcode('project_list', 'project_list_shortcode');
